@@ -56,3 +56,17 @@ Enjoy skynet, I hope you're happy with yourself
 ```
 bin/hubot -a lets-chat
 ```
+
+### Docker
+
+The Dockerfile will link the lets chat adaptor src and start up a hubot instance using the adapter.  
+
+
+To run the Docker image
+```
+docker run -e HUBOT_LCB_TOKEN=[a valid token]  -e HUBOT_LCB_HOSTNAME=[a valid LetsChat hostname] -e HUBOT_LCB_PORT=[a valid LetsChat port] -e HUBOT_SCRIPTS_URI=https://github.com/fabric8io/fabric8-hubot-scripts.git -e HUBOT_LCB_ROOMS=[a valid default room id] -ti test/hubot-lets-chat
+```
+
+
+
+
