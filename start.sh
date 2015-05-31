@@ -1,3 +1,5 @@
+#!/bin/sh -u
+
 function clone_copy_cleanup(){
   # clone repo and cd to git repo but removing the '.git' from the directory name
   dirname=$(basename $1)
@@ -6,12 +8,14 @@ function clone_copy_cleanup(){
   cd /tmp && git clone $1 && cd $(echo "${dirname:0:$len}")
 
   # Move coffeescripts to Hubot scripts folder so they are installed at startup
-	mv *.coffee /home/hubot/scripts/
+	mv *.coffee /home/hubot/lc/scripts
 
-	cd /home/hubot
 	rm -rf /tmp/$(echo "${dirname:0:$len}")
 }
 
-clone_copy_cleanup $HUBOT_SCRIPTS_URI
+export HUBOT_LCB_HOSTNAME=$LETSCHAT_SERVICE_HOST
+export HUBOT_LCB_PORT=$LETSCHAT_SERVICE_PORT
 
-/home/hubot/bin/hubot -a lets-chat
+clone_copy_cleanup $LETSCHAT_HUBOT_SCRIPTS
+cd /home/hubot/lc
+bin/hubot -a lets-chat
