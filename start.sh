@@ -8,14 +8,14 @@ function clone_copy_cleanup(){
   cd /tmp && git clone $1 && cd $(echo "${dirname:0:$len}")
 
   # Move coffeescripts to Hubot scripts folder so they are installed at startup
-	mv *.coffee /home/hubot/lc/scripts
+  mv *.coffee /home/hubot/scripts
 
-	rm -rf /tmp/$(echo "${dirname:0:$len}")
+  rm -rf /tmp/$(echo "${dirname:0:$len}")
 }
 
 export HUBOT_LCB_HOSTNAME=$LETSCHAT_SERVICE_HOST
 export HUBOT_LCB_PORT=$LETSCHAT_SERVICE_PORT
 
 clone_copy_cleanup $LETSCHAT_HUBOT_SCRIPTS
-cd /home/hubot/lc
+cd /home/hubot
 bin/hubot -a lets-chat

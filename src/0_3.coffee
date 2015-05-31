@@ -13,6 +13,8 @@ HTTP_PROXY = process.env.http_proxy || process.env.HTTP_PROXY
 io = require('socket.io-client')
 url = require('url')
 tunnelAgent = require('tunnel-agent')
+http = require('http')
+url = require('url')
 
 chatURL = url.format(
   protocol: LCB_PROTOCOL
@@ -21,6 +23,12 @@ chatURL = url.format(
   query:
     token: LCB_TOKEN
 )
+
+chatRooms =
+  hostname: LCB_HOSTNAME
+  port: LCB_PORT
+  path: '/rooms'
+  headers: 'Authorization': 'Bearer ' + LCB_TOKEN
 
 connectOptions = {}
 if HTTP_PROXY
@@ -36,16 +44,40 @@ class LCB extends Adapter
     super @robot
 
   send: (user, strings...) ->
-    for str in strings
-      @socket.emit 'messages:create',
-        'room': user.room,
-        'text': "#{str}"
+    @checkRoomId user, (roomid) =>
+      for str in strings
+        @socket.emit 'messages:create',
+          'room': roomid,
+          'text': "#{str}"
 
   reply: (user, strings...) ->
     for str in strings
       @socket.emit 'messages:create',
         'room': user.room,
         'text': "@#{user.user.name} #{str}"
+
+  checkRoomId: (user, callback) ->
+    if '#'.match(user.room.charAt(0))
+      # strip off the hash as this isn't returned by the Lets Chat API
+      slug = user.room.substr(1)
+      @findIdFromSlug slug, callback
+    else
+      return callback(user.room)
+
+  findIdFromSlug: (slug, callback) ->
+    http.get(chatRooms, (res) ->
+      body = ''
+      res.on 'data', (d) ->
+        body += d
+      res.on 'end', ->
+        parsed = JSON.parse(body)
+        for item of parsed
+          if parsed[item].slug.match(slug)
+            return callback(parsed[item].id)
+        # we should create the room here if we couldnt find matching slug
+
+    ).on 'error', (e) ->
+      console.log 'Got error: ' + e.message
 
   run: ->
     @socket = io.connect chatURL, connectOptions
