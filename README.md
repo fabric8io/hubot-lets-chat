@@ -24,7 +24,7 @@ npm install hubot-lets-chat --save
 Set the following environment variables for Let's Chat 0.3
 ```
 export HUBOT_LCB_TOKEN=NTRiNjg5NmYyMDZiMzEwMDAwYTAxNmZiOjE0ZTg2ODMwYz...
-export HUBOT_LCB_ROOMS=5279facb1015642226000011,5394ffbabdea44e815000003
+export HUBOT_LCB_ROOMS=fabric8_default,my_project,my_microservice
 ```
 
 ### Let's Chat 0.2

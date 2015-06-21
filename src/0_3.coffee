@@ -44,7 +44,7 @@ class LCB extends Adapter
     super @robot
 
   send: (user, strings...) ->
-    @checkRoomId user, (roomid) =>
+    @checkRoomId user.room, (roomid) =>
       for str in strings
         @socket.emit 'messages:create',
           'room': roomid,
@@ -56,13 +56,13 @@ class LCB extends Adapter
         'room': user.room,
         'text': "@#{user.user.name} #{str}"
 
-  checkRoomId: (user, callback) ->
-    if '#'.match(user.room.charAt(0))
+  checkRoomId: (room, callback) ->
+    if '#'.match(room.charAt(0))
       # strip off the hash as this isn't returned by the Lets Chat API
-      slug = user.room.substr(1)
+      slug = room.substr(1)
       @findIdFromSlug slug, callback
     else
-      return callback(user.room)
+      return callback(room)
 
   findIdFromSlug: (slug, callback) ->
     http.get(chatRooms, (res) ->
@@ -92,9 +92,12 @@ class LCB extends Adapter
           @emit 'connected'
           @connected = true
 
-        for id in LCB_ROOMS
-          @socket.emit 'rooms:join', id, (room) =>
-            console.log 'Joined ' + room.name
+        for slug in LCB_ROOMS
+          @checkRoomId '#' + slug, (id) =>
+            console.log 'No room id found for slug ' + slug if not id
+            console.log 'Joining id ' + id
+            @socket.emit 'rooms:join', id, (room) =>
+              console.log 'Joined ' + room.name
 
     @socket.on 'error', (err) =>
       console.log err
@@ -103,9 +106,6 @@ class LCB extends Adapter
       console.log 'Disconnected!'
 
     @socket.on 'users:join', (user) =>
-      if user.room not in LCB_ROOMS or user.username is @robot.name
-        return
-
       user = @robot.brain.userForId user.id,
         room: user.room,
         name: user.username
