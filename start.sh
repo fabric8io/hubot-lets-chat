@@ -21,7 +21,7 @@ cd /home/hubot
 
 AUTH_HEADER=`echo $LETSCHAT_HUBOT_USERNAME:$LETSCHAT_HUBOT_PASSWORD | base64`
 
-JSON=`curl --silent -X POST  -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Basic ${AUTH_HEADER}" -d "{}" http://${$LETSCHAT_SERVICE_HOST}:${$LETSCHAT_SERVICE_PORT}/account/token/generate`
+JSON=`curl --silent -X POST  -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Basic ${AUTH_HEADER}" -d "{}" http://${LETSCHAT_SERVICE_HOST}:${LETSCHAT_SERVICE_PORT}/account/token/generate`
 
 export HUBOT_LCB_TOKEN=`echo $JSON | jq '.token'`
 
