@@ -23,4 +23,6 @@ RUN yo hubot --owner="fabric8.io <fabric8@googlegroups.com>" --name="fabric8" --
 ADD external-scripts.json /home/hubot/
 ADD start.sh /home/hubot/
 
+ENV HUBOT_LOG_LEVEL debug
+
 CMD /home/hubot/start.sh
